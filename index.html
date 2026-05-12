@@ -24,7 +24,6 @@
       --danger-soft: #fee4e2;
       --warning-soft: #fff7ed;
       --warning-line: #fed7aa;
-      --success: #067647;
       --shadow: 0 18px 45px rgba(15, 23, 42, .08);
       --radius: 18px;
       --sidebar: 270px;
@@ -472,6 +471,10 @@
       background: #0b1120;
     }
 
+    #printArea {
+      display: none;
+    }
+
     @media (max-width: 1240px) {
       :root {
         --sidebar: 240px;
@@ -538,36 +541,18 @@
 
       .sidebar,
       .workspace,
-      .output-actions,
-      .output-subtitle,
-      .status {
+      .output-panel {
         display: none !important;
       }
 
-      .app-shell {
+      #printArea {
         display: block;
-      }
-
-      .output-panel {
-        position: static;
-        height: auto;
-        background: #fff;
+        white-space: pre-wrap;
         color: #000;
-        border: 0;
-      }
-
-      .output-top {
         background: #fff;
-        color: #000;
-        border-bottom: 1px solid #000;
-      }
-
-      #resultado {
-        background: #fff;
-        color: #000;
-        height: auto;
-        min-height: auto;
+        font-family: Arial, Helvetica, sans-serif;
         font-size: 11pt;
+        line-height: 1.35;
         padding: 0;
       }
     }
@@ -597,7 +582,7 @@
       </nav>
 
       <div class="sidebar-note">
-        Os dados ficam apenas no navegador. O modelo final não inclui campos ou blocos não preenchidos.
+        Os dados ficam apenas no navegador. O modelo final só inclui campos realmente preenchidos ou selecionados.
       </div>
     </aside>
 
@@ -606,7 +591,7 @@
         <div>
           <h1 class="page-title">Anamnese de Ginecologia e Obstetrícia</h1>
           <p class="page-subtitle">
-            Preencha apenas o que for clinicamente relevante. O texto final será limpo, sem campos vazios, e pronto para copiar ao prontuário.
+            Preencha apenas o que for clinicamente relevante. O texto final é atualizado automaticamente e remove campos vazios.
           </p>
         </div>
 
@@ -623,7 +608,7 @@
         </div>
 
         <div class="notice">
-          Use o painel à direita para revisar o texto antes de copiar. A saída remove automaticamente blocos vazios.
+          A impressão usa uma área própria, evitando cortar o conteúdo do campo de texto.
         </div>
       </div>
 
@@ -652,12 +637,12 @@
 
             <div class="field quarter">
               <label class="field-label">Data</label>
-              <input name="data" type="date" />
+              <input name="data" type="date" data-autofill="true" />
             </div>
 
             <div class="field quarter">
               <label class="field-label">Hora</label>
-              <input name="hora" type="time" />
+              <input name="hora" type="time" data-autofill="true" />
             </div>
 
             <div class="field quarter">
@@ -1110,7 +1095,8 @@
           <div class="card-body grid">
             <div class="field full">
               <label class="field-label">Hipóteses diagnósticas</label>
-              <textarea class="small" name="hipoteses" placeholder="1. ...&#10;2. ..."></textarea>
+              <textarea class="small" name="hipoteses" placeholder="1. ...
+2. ..."></textarea>
             </div>
 
             <div class="field full">
@@ -1172,27 +1158,67 @@
       <textarea id="resultado" spellcheck="false" aria-label="Texto final gerado"></textarea>
 
       <div class="status" id="status">
-        Preencha os campos relevantes e clique em “Gerar”.
+        Preencha os campos relevantes.
       </div>
     </aside>
   </div>
+
+  <pre id="printArea" aria-hidden="true"></pre>
 
   <script>
     const form = document.getElementById('goForm');
     const resultado = document.getElementById('resultado');
     const statusEl = document.getElementById('status');
+    const printArea = document.getElementById('printArea');
+
+    const STORAGE_KEY = 'anamneseGOForm.v3';
+    const AUTO_FIELDS = new Set(['data', 'hora']);
+    let suppressSave = false;
+
+    function getField(name) {
+      return form.elements[name] || null;
+    }
 
     function val(name) {
-      const el = form.elements[name];
+      const el = getField(name);
       if (!el) return '';
       return String(el.value || '').trim();
     }
 
+    function normalizeText(value) {
+      return String(value || '')
+        .replace(/\r\n/g, '\n')
+        .replace(/[ \t]+/g, ' ')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .join('\n');
+    }
+
+    function ensureTerminalPeriod(value) {
+      const clean = normalizeText(value);
+      if (!clean) return '';
+      return /[.!?:;)]$/.test(clean) ? clean : `${clean}.`;
+    }
+
     function fmtDate(value) {
       if (!value) return '';
-      const [y, m, d] = value.split('-');
+      const [y, m, d] = String(value).split('-');
       if (!y || !m || !d) return value;
       return `${d}/${m}/${y}`;
+    }
+
+    function localDateISO(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function localTimeHM(date = new Date()) {
+      const h = String(date.getHours()).padStart(2, '0');
+      const m = String(date.getMinutes()).padStart(2, '0');
+      return `${h}:${m}`;
     }
 
     function selected(groupName) {
@@ -1202,13 +1228,13 @@
     }
 
     function addLine(lines, label, value) {
-      const clean = String(value || '').trim();
-      if (clean) lines.push(`${label}: ${clean}.`);
+      const clean = normalizeText(value);
+      if (clean) lines.push(`${label}: ${ensureTerminalPeriod(clean)}`);
     }
 
     function addRaw(lines, value) {
-      const clean = String(value || '').trim();
-      if (clean) lines.push(clean.endsWith('.') ? clean : `${clean}.`);
+      const clean = ensureTerminalPeriod(value);
+      if (clean) lines.push(clean);
     }
 
     function addList(lines, label, values) {
@@ -1219,7 +1245,7 @@
 
     function block(title, lines) {
       const clean = lines
-        .map(item => String(item || '').trim())
+        .map(item => normalizeText(item))
         .filter(Boolean);
 
       if (!clean.length) return '';
@@ -1233,12 +1259,26 @@
 
     function joinSections(sections) {
       return sections
-        .map(section => String(section || '').trim())
+        .map(section => normalizeText(section))
         .filter(Boolean)
         .join('\n\n');
     }
 
-    function gerarModelo() {
+    function hasClinicalContent() {
+      const namedControls = Array.from(form.elements).filter(el => el.name);
+
+      return namedControls.some(el => {
+        if (AUTO_FIELDS.has(el.name) && el.dataset.autofilled === 'true') return false;
+        if (el.type === 'checkbox') return el.checked;
+        return normalizeText(el.value).length > 0;
+      });
+    }
+
+    function buildModel() {
+      if (!hasClinicalContent()) {
+        return 'ANAMNESE — PLANTÃO DE GINECOLOGIA E OBSTETRÍCIA\n\nPreencha os campos relevantes para gerar o modelo.';
+      }
+
       const sections = [];
 
       const headerLines = [];
@@ -1249,27 +1289,23 @@
 
       sections.push([
         'ANAMNESE — PLANTÃO DE GINECOLOGIA E OBSTETRÍCIA',
-        headerLines.length ? headerLines.join('\n') : ''
+        headerLines.join('\n')
       ].filter(Boolean).join('\n'));
 
       const identificacao = [];
-
       const pessoa = [
         val('nome'),
         val('idade') ? `${val('idade')} anos` : ''
       ].filter(Boolean).join(', ');
 
-      if (pessoa) identificacao.push(`Paciente: ${pessoa}.`);
-
+      if (pessoa) identificacao.push(`Paciente: ${ensureTerminalPeriod(pessoa)}`);
       addLine(identificacao, 'Prontuário', val('prontuario'));
       addLine(identificacao, 'Procedência', val('procedencia'));
       addLine(identificacao, 'Acompanhante', val('acompanhante'));
       addLine(identificacao, 'Queixa principal', val('qp'));
-
       sections.push(block('Identificação', identificacao));
 
       const obstetricosIniciais = [];
-
       addLine(obstetricosIniciais, 'Gestante', val('gestante'));
       addLine(obstetricosIniciais, 'DUM', fmtDate(val('dum')));
       addLine(obstetricosIniciais, 'IG', val('ig'));
@@ -1289,14 +1325,12 @@
       addLine(obstetricosIniciais, 'Tipo sanguíneo/Rh', val('rh'));
       addLine(obstetricosIniciais, 'Sorologias/exames do pré-natal', val('sorologias'));
       addLine(obstetricosIniciais, 'USG mais recente', val('usg'));
-
       sections.push(block('Dados obstétricos iniciais', obstetricosIniciais));
 
       const hda = [];
       addRaw(hda, val('hda'));
       addList(hda, 'Sintomas associados', selected('sintomas'));
       addList(hda, 'Sinais de gravidade', selected('gravidade'));
-
       sections.push(block('História da doença atual', hda));
 
       const vitaisArray = [
@@ -1309,13 +1343,10 @@
       ].filter(Boolean);
 
       if (vitaisArray.length) {
-        sections.push(block('Sinais vitais', [
-          vitaisArray.join('; ') + '.'
-        ]));
+        sections.push(block('Sinais vitais', [vitaisArray.join('; ') + '.']));
       }
 
       const gineco = [];
-
       addLine(gineco, 'Menarca', val('menarca'));
       addLine(gineco, 'Ciclo menstrual', val('ciclo'));
       addLine(gineco, 'Fluxo', val('fluxo'));
@@ -1325,41 +1356,33 @@
       addLine(gineco, 'Método contraceptivo', val('metodo'));
       addLine(gineco, 'Última relação/risco gestacional', val('riscoGestacional'));
       addLine(gineco, 'Antecedentes ginecológicos', val('anteGineco'));
-
       sections.push(block('Anamnese ginecológica', gineco));
 
       const gestacaoAtual = [];
-
       addLine(gestacaoAtual, 'Movimentos fetais', val('movFetais'));
       addLine(gestacaoAtual, 'Contrações', val('contracoes'));
       addLine(gestacaoAtual, 'Perda de líquido', val('perdaLiquido'));
       addLine(gestacaoAtual, 'Sangramento vaginal', val('sangramento'));
       addLine(gestacaoAtual, 'Sintomas hipertensivos', val('sintHipertensivos'));
       addLine(gestacaoAtual, 'Intercorrências na gestação', val('intercorrenciasGestacao'));
-
       sections.push(block('Gestação atual / queixas obstétricas', gestacaoAtual));
 
       const puerperio = [];
-
       addLine(puerperio, 'Data do parto', fmtDate(val('dataParto')));
       addLine(puerperio, 'Via de parto', val('viaParto'));
       addLine(puerperio, 'Amamentação', val('amamentacao'));
       addLine(puerperio, 'Queixas puerperais', val('queixasPuerperio'));
-
       sections.push(block('Puerpério', puerperio));
 
       const antecedentes = [];
-
       addList(antecedentes, 'Comorbidades', selected('comorbidades'));
       addLine(antecedentes, 'Alergias', val('alergias'));
       addLine(antecedentes, 'Medicações em uso', val('medicacoes'));
       addLine(antecedentes, 'Cirurgias/internações prévias', val('cirurgias'));
       addLine(antecedentes, 'Hábitos/vulnerabilidade', val('habitos'));
-
       sections.push(block('Antecedentes pessoais e contexto', antecedentes));
 
       const exame = [];
-
       addLine(exame, 'Exame geral', val('exameGeral'));
       addLine(exame, 'Altura uterina', val('au'));
       addLine(exame, 'BCF', val('bcf'));
@@ -1367,46 +1390,49 @@
       addLine(exame, 'Toque', val('toqueResumo'));
       addLine(exame, 'Exame obstétrico', val('exameObstetrico'));
       addLine(exame, 'Exame ginecológico/especular/toque', val('exameGineco'));
-
       sections.push(block('Exame físico', exame));
 
       const diagnostico = [];
-
       addRaw(diagnostico, val('hipoteses'));
-
       sections.push(block('Hipóteses diagnósticas', diagnostico));
 
       const conduta = [];
-
       addLine(conduta, 'Exames solicitados/avaliados', val('exames'));
       addLine(conduta, 'Conduta', val('conduta'));
       addLine(conduta, 'Orientações e sinais de alarme', val('orientacoes'));
       addLine(conduta, 'Desfecho', val('desfecho'));
-
       sections.push(block('Exames / conduta / desfecho', conduta));
 
       const responsavel = [];
-
       addLine(responsavel, 'Médico', val('medico'));
       addLine(responsavel, 'CRM', val('crm'));
-
       sections.push(block('Responsável', responsavel));
 
-      let finalText = joinSections(sections);
+      return joinSections(sections);
+    }
 
-      if (!finalText.trim() || finalText.trim() === 'ANAMNESE — PLANTÃO DE GINECOLOGIA E OBSTETRÍCIA') {
-        finalText = 'ANAMNESE — PLANTÃO DE GINECOLOGIA E OBSTETRÍCIA\n\nPreencha os campos relevantes para gerar o modelo.';
+    function gerarModelo(options = {}) {
+      const { silent = false } = options;
+      const finalText = buildModel().trim() + '\n';
+
+      resultado.value = finalText;
+      printArea.textContent = finalText;
+
+      if (!silent) {
+        statusEl.textContent = 'Modelo gerado com campos vazios omitidos. Revise antes de copiar.';
       }
 
-      resultado.value = finalText.trim() + '\n';
-      statusEl.textContent = 'Modelo gerado com campos vazios omitidos. Revise antes de copiar.';
       salvarLocal();
-
-      return resultado.value;
+      return finalText;
     }
 
     async function copiarModelo() {
-      const texto = resultado.value.trim() ? resultado.value : gerarModelo();
+      const texto = gerarModelo({ silent: true });
+
+      if (!hasClinicalContent()) {
+        statusEl.textContent = 'Nada clínico preenchido para copiar.';
+        return;
+      }
 
       try {
         await navigator.clipboard.writeText(texto);
@@ -1420,78 +1446,127 @@
     }
 
     function limparFormulario() {
-      const confirmacao = confirm('Limpar todos os campos preenchidos?');
-      if (!confirmacao) return;
+      if (!confirm('Limpar todos os campos preenchidos?')) return;
 
+      suppressSave = true;
       form.reset();
-      resultado.value = '';
-      localStorage.removeItem('anamneseGOForm');
-      preencherDataHoraAtual();
-      gerarModelo();
+      suppressSave = false;
+
+      localStorage.removeItem(STORAGE_KEY);
+      preencherDataHoraAtual(true);
+      gerarModelo({ silent: true });
       statusEl.textContent = 'Campos limpos.';
     }
 
-    function salvarLocal() {
-      const data = {};
+    function serializeForm() {
+      const data = {
+        values: {},
+        checks: {},
+        auto: {},
+        updatedAt: new Date().toISOString()
+      };
 
       Array.from(form.elements).forEach(el => {
         if (!el.name) return;
         if (el.type === 'checkbox') return;
-        data[el.name] = el.value;
-      });
 
-      data._checks = {};
+        data.values[el.name] = el.value;
+
+        if (AUTO_FIELDS.has(el.name)) {
+          data.auto[el.name] = el.dataset.autofilled === 'true';
+        }
+      });
 
       document.querySelectorAll('[data-group]').forEach(group => {
         const key = group.dataset.group;
-        data._checks[key] = Array.from(
+        data.checks[key] = Array.from(
           group.querySelectorAll('input:checked')
         ).map(input => input.value);
       });
 
-      localStorage.setItem('anamneseGOForm', JSON.stringify(data));
+      return data;
+    }
+
+    function salvarLocal() {
+      if (suppressSave) return;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeForm()));
     }
 
     function carregarLocal() {
       try {
-        const raw = localStorage.getItem('anamneseGOForm');
-        if (!raw) return;
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
 
         const data = JSON.parse(raw);
+        suppressSave = true;
 
-        Object.entries(data).forEach(([key, value]) => {
-          if (key === '_checks') return;
-          if (form.elements[key]) {
-            form.elements[key].value = value;
-          }
+        Object.entries(data.values || {}).forEach(([key, value]) => {
+          const el = getField(key);
+          if (el) el.value = value;
         });
 
-        if (data._checks) {
-          Object.entries(data._checks).forEach(([group, values]) => {
-            document.querySelectorAll(`[data-group="${group}"] input`).forEach(input => {
-              input.checked = values.includes(input.value);
-            });
+        Object.entries(data.auto || {}).forEach(([key, isAuto]) => {
+          const el = getField(key);
+          if (el) el.dataset.autofilled = isAuto ? 'true' : 'false';
+        });
+
+        Object.entries(data.checks || {}).forEach(([group, values]) => {
+          document.querySelectorAll(`[data-group="${group}"] input`).forEach(input => {
+            input.checked = values.includes(input.value);
           });
-        }
+        });
+
+        suppressSave = false;
+        return true;
       } catch (error) {
+        suppressSave = false;
         console.warn('Não foi possível carregar dados locais.', error);
+        return false;
       }
     }
 
-    function preencherDataHoraAtual() {
-      const now = new Date();
+    function preencherDataHoraAtual(force = false) {
+      const dataEl = getField('data');
+      const horaEl = getField('hora');
 
-      if (!val('data')) {
-        document.querySelector('[name="data"]').value = now.toISOString().slice(0, 10);
+      if (dataEl && (force || !dataEl.value)) {
+        dataEl.value = localDateISO();
+        dataEl.dataset.autofilled = 'true';
       }
 
-      if (!val('hora')) {
-        document.querySelector('[name="hora"]').value = now.toTimeString().slice(0, 5);
+      if (horaEl && (force || !horaEl.value)) {
+        horaEl.value = localTimeHM();
+        horaEl.dataset.autofilled = 'true';
       }
     }
 
-    document.getElementById('btnGerar').addEventListener('click', gerarModelo);
-    document.getElementById('btnGerarTopo').addEventListener('click', gerarModelo);
+    function markManualField(event) {
+      const el = event.target;
+
+      if (el && AUTO_FIELDS.has(el.name)) {
+        el.dataset.autofilled = 'false';
+      }
+    }
+
+    function debounce(fn, wait = 250) {
+      let timer;
+
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), wait);
+      };
+    }
+
+    const gerarDebounced = debounce(() => {
+      gerarModelo({ silent: true });
+
+      statusEl.textContent = hasClinicalContent()
+        ? 'Modelo atualizado automaticamente.'
+        : 'Preencha os campos relevantes.';
+    }, 250);
+
+    document.getElementById('btnGerar').addEventListener('click', () => gerarModelo());
+    document.getElementById('btnGerarTopo').addEventListener('click', () => gerarModelo());
 
     document.getElementById('btnCopiar').addEventListener('click', copiarModelo);
     document.getElementById('btnCopiarTopo').addEventListener('click', copiarModelo);
@@ -1499,16 +1574,25 @@
     document.getElementById('btnLimparTopo').addEventListener('click', limparFormulario);
 
     document.getElementById('btnImprimir').addEventListener('click', () => {
-      gerarModelo();
+      gerarModelo({ silent: true });
       window.print();
     });
 
-    form.addEventListener('input', salvarLocal);
-    form.addEventListener('change', salvarLocal);
+    form.addEventListener('input', event => {
+      markManualField(event);
+      salvarLocal();
+      gerarDebounced();
+    });
+
+    form.addEventListener('change', event => {
+      markManualField(event);
+      salvarLocal();
+      gerarDebounced();
+    });
 
     carregarLocal();
-    preencherDataHoraAtual();
-    gerarModelo();
+    preencherDataHoraAtual(false);
+    gerarModelo({ silent: true });
   </script>
 </body>
 </html>
