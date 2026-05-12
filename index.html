@@ -27,7 +27,7 @@
       --shadow: 0 18px 45px rgba(15, 23, 42, .08);
       --radius: 18px;
       --sidebar: 270px;
-      --output: 460px;
+      --output: 470px;
     }
 
     * {
@@ -63,7 +63,7 @@
 
     .app-shell {
       display: grid;
-      grid-template-columns: var(--sidebar) minmax(680px, 1fr) var(--output);
+      grid-template-columns: var(--sidebar) minmax(720px, 1fr) var(--output);
       min-height: 100vh;
     }
 
@@ -73,7 +73,7 @@
       height: 100vh;
       padding: 22px 18px;
       border-right: 1px solid var(--line);
-      background: rgba(255, 255, 255, .82);
+      background: rgba(255, 255, 255, .86);
       backdrop-filter: blur(14px);
       overflow-y: auto;
     }
@@ -184,7 +184,7 @@
     .page-subtitle {
       margin: 8px 0 0;
       color: var(--muted);
-      max-width: 760px;
+      max-width: 780px;
       font-size: .98rem;
     }
 
@@ -266,7 +266,7 @@
     }
 
     .card {
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.94);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
@@ -475,10 +475,10 @@
       display: none;
     }
 
-    @media (max-width: 1240px) {
+    @media (max-width: 1280px) {
       :root {
         --sidebar: 240px;
-        --output: 420px;
+        --output: 430px;
       }
 
       .check-grid {
@@ -486,7 +486,7 @@
       }
     }
 
-    @media (max-width: 1080px) {
+    @media (max-width: 1100px) {
       .app-shell {
         display: block;
       }
@@ -575,6 +575,7 @@
         <a href="#hda"><span class="dot"></span>HDA e sinais vitais</a>
         <a href="#gineco"><span class="dot"></span>Ginecologia</a>
         <a href="#obstetrica"><span class="dot"></span>Obstetrícia</a>
+        <a href="#gestacaoAtual"><span class="dot"></span>Gestação atual</a>
         <a href="#puerperio"><span class="dot"></span>Puerpério</a>
         <a href="#antecedentes"><span class="dot"></span>Antecedentes</a>
         <a href="#exame"><span class="dot"></span>Exame físico</a>
@@ -582,7 +583,7 @@
       </nav>
 
       <div class="sidebar-note">
-        Os dados ficam apenas no navegador. O modelo final só inclui campos realmente preenchidos ou selecionados.
+        Os dados ficam apenas no navegador. A evolução final só inclui campos realmente preenchidos ou selecionados.
       </div>
     </aside>
 
@@ -591,7 +592,7 @@
         <div>
           <h1 class="page-title">Anamnese de Ginecologia e Obstetrícia</h1>
           <p class="page-subtitle">
-            Preencha apenas o que for clinicamente relevante. O texto final é atualizado automaticamente e remove campos vazios.
+            Preencha apenas os dados relevantes. Campos vazios e seções não preenchidas são omitidos automaticamente no modelo final.
           </p>
         </div>
 
@@ -604,11 +605,11 @@
 
       <div class="notice-grid">
         <div class="notice warning">
-          Registrar explicitamente sinais de alarme: sangramento intenso, perda de líquido, febre, dor abdominal importante, cefaleia persistente, escotomas, dor epigástrica/HCD, convulsão, dispneia, síncope, trauma e redução/ausência de movimentos fetais.
+          Registrar ativamente sinais de gravidade: sangramento intenso, perda de líquido, febre, dor abdominal importante, cefaleia persistente, escotomas, dor epigástrica/HCD, convulsão, dispneia, síncope, trauma e redução/ausência de movimentos fetais.
         </div>
 
         <div class="notice">
-          A impressão usa uma área própria, evitando cortar o conteúdo do campo de texto.
+          Campos estruturados reduzem erro de digitação e deixam a saída mais padronizada para prontuário.
         </div>
       </div>
 
@@ -616,7 +617,7 @@
         <section class="card" id="identificacao">
           <div class="card-header">
             <h2>1. Identificação e classificação inicial</h2>
-            <span class="card-tag">Obrigatório ideal</span>
+            <span class="card-tag">Inicial</span>
           </div>
 
           <div class="card-body grid">
@@ -658,7 +659,7 @@
 
             <div class="field">
               <label class="field-label">Procedência</label>
-              <input name="procedencia" />
+              <input name="procedencia" placeholder="UBS, demanda espontânea, transferência..." />
             </div>
 
             <div class="field">
@@ -669,41 +670,6 @@
             <div class="field full">
               <label class="field-label">Queixa principal</label>
               <input name="qp" placeholder="Ex.: dor pélvica, sangramento vaginal, perda de líquido, contrações..." />
-            </div>
-
-            <div class="field third">
-              <label class="field-label">Gestante?</label>
-              <select name="gestante">
-                <option value="">Selecionar</option>
-                <option>Sim</option>
-                <option>Não</option>
-                <option>Não sabe</option>
-              </select>
-            </div>
-
-            <div class="field third">
-              <label class="field-label">DUM</label>
-              <input name="dum" type="date" />
-            </div>
-
-            <div class="field third">
-              <label class="field-label">IG</label>
-              <input name="ig" placeholder="Ex.: 32s4d" />
-            </div>
-
-            <div class="field third">
-              <label class="field-label">DPP</label>
-              <input name="dpp" type="date" />
-            </div>
-
-            <div class="field third">
-              <label class="field-label">Cartão pré-natal</label>
-              <select name="cartaoPrenatal">
-                <option value="">Selecionar</option>
-                <option>Disponível</option>
-                <option>Indisponível</option>
-                <option>Não realiza pré-natal</option>
-              </select>
             </div>
           </div>
         </section>
@@ -857,7 +823,21 @@
 
             <div class="field third">
               <label class="field-label">Método contraceptivo</label>
-              <input name="metodo" placeholder="Ex.: ACO, DIU cobre, injetável..." />
+              <select name="metodo">
+                <option value="">Selecionar</option>
+                <option>Nenhum</option>
+                <option>Preservativo</option>
+                <option>Anticoncepcional oral combinado</option>
+                <option>Progestagênio isolado</option>
+                <option>Injetável mensal</option>
+                <option>Injetável trimestral</option>
+                <option>DIU de cobre</option>
+                <option>DIU hormonal</option>
+                <option>Implante</option>
+                <option>Laqueadura</option>
+                <option>Vasectomia do parceiro</option>
+                <option>Outro</option>
+              </select>
             </div>
 
             <div class="field full">
@@ -874,39 +854,101 @@
 
         <section class="card" id="obstetrica">
           <div class="card-header">
-            <h2>4. Anamnese obstétrica</h2>
+            <h2>4. Dados obstétricos e pré-natal</h2>
             <span class="card-tag">Obstetrícia</span>
           </div>
 
           <div class="card-body grid">
+            <div class="field third">
+              <label class="field-label">Gestante?</label>
+              <select name="gestante">
+                <option value="">Selecionar</option>
+                <option>Sim</option>
+                <option>Não</option>
+                <option>Não sabe</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label class="field-label">DUM</label>
+              <input name="dum" type="date" />
+            </div>
+
+            <div class="field third">
+              <label class="field-label">IG</label>
+              <input name="ig" placeholder="Ex.: 32s4d" />
+            </div>
+
+            <div class="field third">
+              <label class="field-label">DPP</label>
+              <input name="dpp" type="date" />
+            </div>
+
+            <div class="field third">
+              <label class="field-label">Cartão pré-natal</label>
+              <select name="cartaoPrenatal">
+                <option value="">Selecionar</option>
+                <option>Disponível</option>
+                <option>Indisponível</option>
+                <option>Não realiza pré-natal</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label class="field-label">Tipo sanguíneo/Rh</label>
+              <select name="rh">
+                <option value="">Selecionar</option>
+                <option>O+</option>
+                <option>O-</option>
+                <option>A+</option>
+                <option>A-</option>
+                <option>B+</option>
+                <option>B-</option>
+                <option>AB+</option>
+                <option>AB-</option>
+                <option>Desconhecido</option>
+              </select>
+            </div>
+
             <div class="field quarter">
               <label class="field-label">Gesta</label>
-              <input name="gesta" />
+              <input name="gesta" inputmode="numeric" />
             </div>
 
             <div class="field quarter">
               <label class="field-label">Para</label>
-              <input name="para" />
+              <input name="para" inputmode="numeric" />
             </div>
 
             <div class="field quarter">
               <label class="field-label">Abortos</label>
-              <input name="abortos" />
+              <input name="abortos" inputmode="numeric" />
             </div>
 
             <div class="field quarter">
               <label class="field-label">Cesáreas</label>
-              <input name="cesareas" />
+              <input name="cesareas" inputmode="numeric" />
             </div>
 
-            <div class="field">
-              <label class="field-label">Pré-natal</label>
-              <input name="prenatal" placeholder="nº consultas, local, intercorrências" />
+            <div class="field third">
+              <label class="field-label">Realiza pré-natal?</label>
+              <select name="prenatalStatus">
+                <option value="">Selecionar</option>
+                <option>Sim</option>
+                <option>Não</option>
+                <option>Iniciado tardiamente</option>
+                <option>Não sabe informar</option>
+              </select>
             </div>
 
-            <div class="field">
-              <label class="field-label">Tipo sanguíneo/Rh</label>
-              <input name="rh" placeholder="Ex.: O+, A-, desconhecido" />
+            <div class="field third">
+              <label class="field-label">Nº de consultas</label>
+              <input name="prenatalConsultas" type="number" min="0" placeholder="Ex.: 6" />
+            </div>
+
+            <div class="field third">
+              <label class="field-label">Local do pré-natal</label>
+              <input name="prenatalLocal" placeholder="UBS, particular, maternidade..." />
             </div>
 
             <div class="field full">
@@ -918,7 +960,16 @@
               <label class="field-label">USG mais recente</label>
               <textarea class="small" name="usg" placeholder="Data, IG, placenta, líquido, apresentação, peso fetal estimado, achados relevantes."></textarea>
             </div>
+          </div>
+        </section>
 
+        <section class="card" id="gestacaoAtual">
+          <div class="card-header">
+            <h2>5. Gestação atual e queixas obstétricas</h2>
+            <span class="card-tag">Queixas</span>
+          </div>
+
+          <div class="card-body grid">
             <div class="field third">
               <label class="field-label">Movimentos fetais</label>
               <select name="movFetais">
@@ -932,34 +983,127 @@
 
             <div class="field third">
               <label class="field-label">Contrações</label>
-              <input name="contracoes" placeholder="Ex.: 3/10 min" />
+              <select name="contracoesStatus">
+                <option value="">Selecionar</option>
+                <option>Nega</option>
+                <option>Irregulares</option>
+                <option>Regulares</option>
+                <option>Dolorosas</option>
+                <option>Não sabe informar</option>
+              </select>
             </div>
 
             <div class="field third">
-              <label class="field-label">Perda de líquido</label>
-              <input name="perdaLiquido" placeholder="horário/aspecto/odor" />
+              <label class="field-label">Frequência das contrações</label>
+              <input name="contracoesFrequencia" placeholder="Ex.: 3/10 min" />
             </div>
 
             <div class="field third">
-              <label class="field-label">Sangramento</label>
-              <input name="sangramento" placeholder="quantidade/cor/coágulos" />
+              <label class="field-label">Perda de líquido?</label>
+              <select name="perdaLiquidoStatus">
+                <option value="">Selecionar</option>
+                <option>Não</option>
+                <option>Sim</option>
+                <option>Dúvida</option>
+              </select>
             </div>
 
             <div class="field third">
-              <label class="field-label">Sintomas hipertensivos</label>
-              <input name="sintHipertensivos" placeholder="cefaleia, escotomas, HCD..." />
+              <label class="field-label">Aspecto do líquido</label>
+              <select name="perdaLiquidoAspecto">
+                <option value="">Selecionar</option>
+                <option>Claro</option>
+                <option>Amarelado</option>
+                <option>Esverdeado</option>
+                <option>Sanguinolento</option>
+                <option>Purulento</option>
+                <option>Fétido</option>
+                <option>Não sabe informar</option>
+              </select>
             </div>
 
-            <div class="field two-thirds">
+            <div class="field third">
+              <label class="field-label">Horário da perda</label>
+              <input name="perdaLiquidoHorario" type="time" />
+            </div>
+
+            <div class="field third">
+              <label class="field-label">Sangramento vaginal?</label>
+              <select name="sangramentoStatus">
+                <option value="">Selecionar</option>
+                <option>Não</option>
+                <option>Sim</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label class="field-label">Quantidade do sangramento</label>
+              <select name="sangramentoQuantidade">
+                <option value="">Selecionar</option>
+                <option>Pequena quantidade</option>
+                <option>Moderada quantidade</option>
+                <option>Grande quantidade</option>
+                <option>Sangramento intenso</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label class="field-label">Aspecto do sangramento</label>
+              <select name="sangramentoAspecto">
+                <option value="">Selecionar</option>
+                <option>Vermelho vivo</option>
+                <option>Escurecido</option>
+                <option>Borra de café</option>
+                <option>Com coágulos</option>
+                <option>Sem coágulos</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label class="field-label">Sintomas hipertensivos / pré-eclâmpsia</label>
+
+              <div class="check-grid" data-group="sintomasHipertensivosChecks">
+                <label class="check"><input type="checkbox" value="cefaleia intensa">Cefaleia intensa</label>
+                <label class="check"><input type="checkbox" value="escotomas">Escotomas</label>
+                <label class="check"><input type="checkbox" value="turvação visual">Turvação visual</label>
+                <label class="check"><input type="checkbox" value="dor epigástrica">Dor epigástrica</label>
+                <label class="check"><input type="checkbox" value="dor em hipocôndrio direito">Dor em HCD</label>
+                <label class="check"><input type="checkbox" value="náuseas/vômitos importantes">Náuseas/vômitos</label>
+                <label class="check"><input type="checkbox" value="dispneia">Dispneia</label>
+                <label class="check"><input type="checkbox" value="edema súbito de face/mãos">Edema súbito</label>
+                <label class="check"><input type="checkbox" value="convulsão">Convulsão</label>
+              </div>
+            </div>
+
+            <div class="field full">
               <label class="field-label">Intercorrências na gestação</label>
-              <input name="intercorrenciasGestacao" />
+
+              <div class="check-grid" data-group="intercorrenciasGestacaoChecks">
+                <label class="check"><input type="checkbox" value="hipertensão gestacional">Hipertensão gestacional</label>
+                <label class="check"><input type="checkbox" value="pré-eclâmpsia">Pré-eclâmpsia</label>
+                <label class="check"><input type="checkbox" value="diabetes gestacional">Diabetes gestacional</label>
+                <label class="check"><input type="checkbox" value="infecção urinária">Infecção urinária</label>
+                <label class="check"><input type="checkbox" value="sangramento na gestação">Sangramento</label>
+                <label class="check"><input type="checkbox" value="ameaça de abortamento">Ameaça de abortamento</label>
+                <label class="check"><input type="checkbox" value="ameaça de parto prematuro">Ameaça de parto prematuro</label>
+                <label class="check"><input type="checkbox" value="restrição de crescimento fetal">RCF</label>
+                <label class="check"><input type="checkbox" value="oligodrâmnio">Oligodrâmnio</label>
+                <label class="check"><input type="checkbox" value="polidrâmnio">Polidrâmnio</label>
+                <label class="check"><input type="checkbox" value="placenta prévia">Placenta prévia</label>
+                <label class="check"><input type="checkbox" value="internação na gestação">Internação</label>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label class="field-label">Outras intercorrências / observações obstétricas</label>
+              <textarea class="small" name="intercorrenciasGestacaoOutras"></textarea>
             </div>
           </div>
         </section>
 
         <section class="card" id="puerperio">
           <div class="card-header">
-            <h2>5. Puerpério, se aplicável</h2>
+            <h2>6. Puerpério, se aplicável</h2>
             <span class="card-tag">Opcional</span>
           </div>
 
@@ -991,14 +1135,33 @@
 
             <div class="field full">
               <label class="field-label">Queixas puerperais</label>
-              <textarea class="small" name="queixasPuerperio" placeholder="Febre, dor, lóquios, ferida operatória, mastalgia, cefaleia, PA elevada, sintomas emocionais..."></textarea>
+
+              <div class="check-grid" data-group="queixasPuerperaisChecks">
+                <label class="check"><input type="checkbox" value="febre">Febre</label>
+                <label class="check"><input type="checkbox" value="dor abdominal">Dor abdominal</label>
+                <label class="check"><input type="checkbox" value="sangramento aumentado">Sangramento aumentado</label>
+                <label class="check"><input type="checkbox" value="lóquios fétidos">Lóquios fétidos</label>
+                <label class="check"><input type="checkbox" value="dor em ferida operatória">Dor em FO</label>
+                <label class="check"><input type="checkbox" value="secreção em ferida operatória">Secreção em FO</label>
+                <label class="check"><input type="checkbox" value="mastalgia">Mastalgia</label>
+                <label class="check"><input type="checkbox" value="ingurgitamento mamário">Ingurgitamento</label>
+                <label class="check"><input type="checkbox" value="cefaleia">Cefaleia</label>
+                <label class="check"><input type="checkbox" value="pressão arterial elevada">PA elevada</label>
+                <label class="check"><input type="checkbox" value="tristeza intensa">Tristeza intensa</label>
+                <label class="check"><input type="checkbox" value="ideação suicida">Ideação suicida</label>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label class="field-label">Outras informações do puerpério</label>
+              <textarea class="small" name="puerperioOutras"></textarea>
             </div>
           </div>
         </section>
 
         <section class="card" id="antecedentes">
           <div class="card-header">
-            <h2>6. Antecedentes pessoais, medicações e contexto</h2>
+            <h2>7. Antecedentes pessoais, medicações e contexto</h2>
             <span class="card-tag">Só sai se preenchido</span>
           </div>
 
@@ -1020,12 +1183,22 @@
               </div>
             </div>
 
-            <div class="field">
+            <div class="field third">
               <label class="field-label">Alergias</label>
-              <input name="alergias" placeholder="Ex.: dipirona; penicilina; nega alergias..." />
+              <select name="alergiasStatus">
+                <option value="">Selecionar</option>
+                <option>Nega alergias conhecidas</option>
+                <option>Sim</option>
+                <option>Não sabe informar</option>
+              </select>
             </div>
 
-            <div class="field">
+            <div class="field two-thirds">
+              <label class="field-label">Descrição da alergia</label>
+              <input name="alergiasDescricao" placeholder="Ex.: dipirona, penicilina, látex..." />
+            </div>
+
+            <div class="field full">
               <label class="field-label">Medicações em uso</label>
               <input name="medicacoes" />
             </div>
@@ -1044,7 +1217,7 @@
 
         <section class="card" id="exame">
           <div class="card-header">
-            <h2>7. Exame físico geral, obstétrico e ginecológico</h2>
+            <h2>8. Exame físico geral, obstétrico e ginecológico</h2>
             <span class="card-tag">Exame</span>
           </div>
 
@@ -1088,15 +1261,14 @@
 
         <section class="card" id="conduta">
           <div class="card-header">
-            <h2>8. Hipóteses, exames, conduta e desfecho</h2>
+            <h2>9. Hipóteses, exames, conduta e desfecho</h2>
             <span class="card-tag">Finalização</span>
           </div>
 
           <div class="card-body grid">
             <div class="field full">
               <label class="field-label">Hipóteses diagnósticas</label>
-              <textarea class="small" name="hipoteses" placeholder="1. ...
-2. ..."></textarea>
+              <textarea class="small" name="hipoteses" placeholder="1. ...&#10;2. ..."></textarea>
             </div>
 
             <div class="field full">
@@ -1146,7 +1318,7 @@
     <aside class="output-panel" aria-label="Modelo gerado">
       <div class="output-top">
         <h2 class="output-title">Modelo padronizado</h2>
-        <p class="output-subtitle">Campos vazios e seções não preenchidas são omitidos automaticamente.</p>
+        <p class="output-subtitle">A saída é atualizada automaticamente e não inclui campos vazios.</p>
 
         <div class="output-actions">
           <button class="btn" type="button" id="btnGerar">Gerar</button>
@@ -1171,7 +1343,7 @@
     const statusEl = document.getElementById('status');
     const printArea = document.getElementById('printArea');
 
-    const STORAGE_KEY = 'anamneseGOForm.v3';
+    const STORAGE_KEY = 'anamneseGOForm.profissional.v1';
     const AUTO_FIELDS = new Set(['data', 'hora']);
     let suppressSave = false;
 
@@ -1305,28 +1477,6 @@
       addLine(identificacao, 'Queixa principal', val('qp'));
       sections.push(block('Identificação', identificacao));
 
-      const obstetricosIniciais = [];
-      addLine(obstetricosIniciais, 'Gestante', val('gestante'));
-      addLine(obstetricosIniciais, 'DUM', fmtDate(val('dum')));
-      addLine(obstetricosIniciais, 'IG', val('ig'));
-      addLine(obstetricosIniciais, 'DPP', fmtDate(val('dpp')));
-      addLine(obstetricosIniciais, 'Cartão pré-natal', val('cartaoPrenatal'));
-
-      const gpa = [
-        val('gesta') ? `G${val('gesta')}` : '',
-        val('para') ? `P${val('para')}` : '',
-        val('abortos') ? `A${val('abortos')}` : '',
-        val('cesareas') ? `C${val('cesareas')}` : ''
-      ].filter(Boolean).join(' ');
-
-      if (gpa) obstetricosIniciais.push(`Antecedentes obstétricos: ${gpa}.`);
-
-      addLine(obstetricosIniciais, 'Pré-natal', val('prenatal'));
-      addLine(obstetricosIniciais, 'Tipo sanguíneo/Rh', val('rh'));
-      addLine(obstetricosIniciais, 'Sorologias/exames do pré-natal', val('sorologias'));
-      addLine(obstetricosIniciais, 'USG mais recente', val('usg'));
-      sections.push(block('Dados obstétricos iniciais', obstetricosIniciais));
-
       const hda = [];
       addRaw(hda, val('hda'));
       addList(hda, 'Sintomas associados', selected('sintomas'));
@@ -1358,25 +1508,60 @@
       addLine(gineco, 'Antecedentes ginecológicos', val('anteGineco'));
       sections.push(block('Anamnese ginecológica', gineco));
 
+      const obstetricos = [];
+      addLine(obstetricos, 'Gestante', val('gestante'));
+      addLine(obstetricos, 'DUM', fmtDate(val('dum')));
+      addLine(obstetricos, 'IG', val('ig'));
+      addLine(obstetricos, 'DPP', fmtDate(val('dpp')));
+      addLine(obstetricos, 'Cartão pré-natal', val('cartaoPrenatal'));
+      addLine(obstetricos, 'Tipo sanguíneo/Rh', val('rh'));
+
+      const gpa = [
+        val('gesta') ? `G${val('gesta')}` : '',
+        val('para') ? `P${val('para')}` : '',
+        val('abortos') ? `A${val('abortos')}` : '',
+        val('cesareas') ? `C${val('cesareas')}` : ''
+      ].filter(Boolean).join(' ');
+
+      if (gpa) obstetricos.push(`Antecedentes obstétricos: ${gpa}.`);
+
+      addLine(obstetricos, 'Pré-natal', val('prenatalStatus'));
+      addLine(obstetricos, 'Número de consultas de pré-natal', val('prenatalConsultas'));
+      addLine(obstetricos, 'Local do pré-natal', val('prenatalLocal'));
+      addLine(obstetricos, 'Sorologias/exames do pré-natal', val('sorologias'));
+      addLine(obstetricos, 'USG mais recente', val('usg'));
+      sections.push(block('Dados obstétricos e pré-natal', obstetricos));
+
       const gestacaoAtual = [];
       addLine(gestacaoAtual, 'Movimentos fetais', val('movFetais'));
-      addLine(gestacaoAtual, 'Contrações', val('contracoes'));
-      addLine(gestacaoAtual, 'Perda de líquido', val('perdaLiquido'));
-      addLine(gestacaoAtual, 'Sangramento vaginal', val('sangramento'));
-      addLine(gestacaoAtual, 'Sintomas hipertensivos', val('sintHipertensivos'));
-      addLine(gestacaoAtual, 'Intercorrências na gestação', val('intercorrenciasGestacao'));
-      sections.push(block('Gestação atual / queixas obstétricas', gestacaoAtual));
+      addLine(gestacaoAtual, 'Contrações', val('contracoesStatus'));
+      addLine(gestacaoAtual, 'Frequência das contrações', val('contracoesFrequencia'));
+
+      addLine(gestacaoAtual, 'Perda de líquido', val('perdaLiquidoStatus'));
+      addLine(gestacaoAtual, 'Aspecto do líquido', val('perdaLiquidoAspecto'));
+      addLine(gestacaoAtual, 'Horário da perda de líquido', val('perdaLiquidoHorario'));
+
+      addLine(gestacaoAtual, 'Sangramento vaginal', val('sangramentoStatus'));
+      addLine(gestacaoAtual, 'Quantidade do sangramento', val('sangramentoQuantidade'));
+      addLine(gestacaoAtual, 'Aspecto do sangramento', val('sangramentoAspecto'));
+
+      addList(gestacaoAtual, 'Sintomas hipertensivos/pré-eclâmpsia', selected('sintomasHipertensivosChecks'));
+      addList(gestacaoAtual, 'Intercorrências na gestação', selected('intercorrenciasGestacaoChecks'));
+      addLine(gestacaoAtual, 'Outras intercorrências/observações obstétricas', val('intercorrenciasGestacaoOutras'));
+      sections.push(block('Gestação atual e queixas obstétricas', gestacaoAtual));
 
       const puerperio = [];
       addLine(puerperio, 'Data do parto', fmtDate(val('dataParto')));
       addLine(puerperio, 'Via de parto', val('viaParto'));
       addLine(puerperio, 'Amamentação', val('amamentacao'));
-      addLine(puerperio, 'Queixas puerperais', val('queixasPuerperio'));
+      addList(puerperio, 'Queixas puerperais', selected('queixasPuerperaisChecks'));
+      addLine(puerperio, 'Outras informações do puerpério', val('puerperioOutras'));
       sections.push(block('Puerpério', puerperio));
 
       const antecedentes = [];
       addList(antecedentes, 'Comorbidades', selected('comorbidades'));
-      addLine(antecedentes, 'Alergias', val('alergias'));
+      addLine(antecedentes, 'Alergias', val('alergiasStatus'));
+      addLine(antecedentes, 'Descrição da alergia', val('alergiasDescricao'));
       addLine(antecedentes, 'Medicações em uso', val('medicacoes'));
       addLine(antecedentes, 'Cirurgias/internações prévias', val('cirurgias'));
       addLine(antecedentes, 'Hábitos/vulnerabilidade', val('habitos'));
@@ -1479,6 +1664,7 @@
 
       document.querySelectorAll('[data-group]').forEach(group => {
         const key = group.dataset.group;
+
         data.checks[key] = Array.from(
           group.querySelectorAll('input:checked')
         ).map(input => input.value);
