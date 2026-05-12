@@ -1,0 +1,1275 @@
+Cole este conteúdo em um arquivo chamado index.html e publique no GitHub Pages.
+
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anamnese GO — Plantão</title>
+  <meta name="description" content="Formulário estático para anamnese em plantão de Ginecologia e Obstetrícia com geração de modelo padronizado copiável." />
+
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --panel-2: #fbfcff;
+      --text: #172033;
+      --muted: #5d667a;
+      --line: #dfe4ee;
+      --brand: #5b4bdb;
+      --brand-2: #4433b8;
+      --danger: #b42318;
+      --shadow: 0 12px 35px rgba(20, 28, 50, .08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f7f7ff 0%, var(--bg) 42%, #f4f6fa 100%);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    header {
+      padding: 34px 20px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .84);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.55rem, 3vw, 2.35rem);
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 7px 0 0;
+      max-width: 760px;
+      font-size: .98rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 15px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--brand);
+      color: white;
+      box-shadow: 0 8px 18px rgba(91,75,219,.22);
+      transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+      font-size: .92rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      background: var(--brand-2);
+      transform: translateY(-1px);
+    }
+
+    button.secondary {
+      background: #edf0f7;
+      color: var(--text);
+      box-shadow: none;
+    }
+
+    button.secondary:hover {
+      background: #e2e6f0;
+    }
+
+    button.danger {
+      background: #fee4e2;
+      color: var(--danger);
+      box-shadow: none;
+    }
+
+    button.danger:hover {
+      background: #ffd0cc;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 20px 52px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(340px, .88fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    nav a {
+      color: var(--brand-2);
+      border: 1px solid #dcd8ff;
+      background: #f3f1ff;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: .86rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.08rem;
+      letter-spacing: -.02em;
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-2);
+    }
+
+    .card-body {
+      padding: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 13px;
+    }
+
+    .field {
+      grid-column: span 6;
+    }
+
+    .field.third {
+      grid-column: span 4;
+    }
+
+    .field.quarter {
+      grid-column: span 3;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: 750;
+      font-size: .84rem;
+      color: #30394d;
+      margin-bottom: 6px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      padding: 10px 11px;
+      min-height: 42px;
+      outline: none;
+      font: inherit;
+      transition: border .12s ease, box-shadow .12s ease;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    textarea.small {
+      min-height: 62px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #9b91ee;
+      box-shadow: 0 0 0 4px rgba(91,75,219,.1);
+    }
+
+    .checks {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .check {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: #2d3548;
+      font-size: .9rem;
+      min-height: 42px;
+    }
+
+    .check input {
+      width: 18px;
+      min-height: 18px;
+      margin-top: 1px;
+      accent-color: var(--brand);
+    }
+
+    .alert-box {
+      background: #fff8ed;
+      border: 1px solid #f4d29b;
+      color: #58330a;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: .92rem;
+    }
+
+    .privacy-box {
+      background: #f2f7ff;
+      border: 1px solid #cfe0ff;
+      color: #203a63;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: .92rem;
+    }
+
+    aside {
+      position: sticky;
+      top: 142px;
+    }
+
+    .output-card {
+      background: #0f172a;
+      color: #e5e7eb;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.09);
+    }
+
+    .output-header {
+      padding: 15px 16px;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .output-header strong {
+      letter-spacing: -.01em;
+    }
+
+    .output-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .output-actions button {
+      padding: 8px 11px;
+      font-size: .82rem;
+    }
+
+    .output-actions button.secondary {
+      background: #283548;
+      color: #e5e7eb;
+    }
+
+    #resultado {
+      width: 100%;
+      min-height: 660px;
+      border: 0;
+      border-radius: 0;
+      background: #111827;
+      color: #e5e7eb;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: .85rem;
+      line-height: 1.55;
+      padding: 16px;
+      resize: vertical;
+      box-shadow: none;
+    }
+
+    .status {
+      min-height: 20px;
+      color: #b7c2d8;
+      font-size: .82rem;
+      padding: 0 16px 14px;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: .83rem;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 980px) {
+      header {
+        position: static;
+      }
+
+      .header-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .header-actions {
+        justify-content: flex-start;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: static;
+      }
+
+      #resultado {
+        min-height: 420px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .field,
+      .field.third,
+      .field.quarter {
+        grid-column: 1 / -1;
+      }
+
+      .checks {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        padding-top: 24px;
+      }
+
+      main {
+        padding-inline: 14px;
+      }
+
+      .card-body {
+        padding: 14px;
+      }
+    }
+
+    @media print {
+      header,
+      nav,
+      .form-column,
+      .output-actions,
+      .status,
+      .footer-note {
+        display: none !important;
+      }
+
+      main {
+        display: block;
+        padding: 0;
+        max-width: none;
+      }
+
+      aside {
+        position: static;
+      }
+
+      .output-card {
+        box-shadow: none;
+        border: 0;
+        border-radius: 0;
+        background: #fff;
+        color: #000;
+      }
+
+      .output-header {
+        color: #000;
+        border-bottom: 1px solid #000;
+      }
+
+      #resultado {
+        background: #fff;
+        color: #000;
+        min-height: auto;
+        height: auto;
+        border: 0;
+        font-size: 11pt;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>Anamnese GO — Plantão</h1>
+        <p class="subtitle">
+          Formulário estático para Ginecologia e Obstetrícia. Preencha os campos, selecione os achados e gere um modelo padronizado para copiar ao prontuário.
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" id="btnGerarTopo">Gerar modelo</button>
+        <button type="button" class="secondary" id="btnCopiarTopo">Copiar</button>
+        <button type="button" class="danger" id="btnLimparTopo">Limpar</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="form-column">
+      <nav aria-label="Navegação por seções">
+        <a href="#identificacao">Identificação</a>
+        <a href="#hda">HDA</a>
+        <a href="#gineco">Gineco</a>
+        <a href="#obstetrica">Obstétrica</a>
+        <a href="#puerperio">Puerpério</a>
+        <a href="#exame">Exame</a>
+        <a href="#conduta">Conduta</a>
+      </nav>
+
+      <div class="privacy-box">
+        Esta página funciona integralmente no navegador. Não há envio de dados para servidor. Em computador compartilhado, limpe os campos antes de sair.
+      </div>
+
+      <form id="goForm" autocomplete="off">
+        <section class="card" id="identificacao">
+          <h2>1. Identificação e classificação inicial</h2>
+
+          <div class="card-body grid">
+            <div class="field">
+              <label>Nome</label>
+              <input name="nome" placeholder="Nome da paciente" />
+            </div>
+
+            <div class="field quarter">
+              <label>Idade</label>
+              <input name="idade" placeholder="anos" />
+            </div>
+
+            <div class="field quarter">
+              <label>Data</label>
+              <input name="data" type="date" />
+            </div>
+
+            <div class="field quarter">
+              <label>Hora</label>
+              <input name="hora" type="time" />
+            </div>
+
+            <div class="field quarter">
+              <label>Prontuário</label>
+              <input name="prontuario" />
+            </div>
+
+            <div class="field">
+              <label>Procedência</label>
+              <input name="procedencia" />
+            </div>
+
+            <div class="field">
+              <label>Acompanhante</label>
+              <input name="acompanhante" />
+            </div>
+
+            <div class="field full">
+              <label>Queixa principal</label>
+              <input name="qp" placeholder="Ex.: dor pélvica, sangramento vaginal, perda de líquido, contrações..." />
+            </div>
+
+            <div class="field third">
+              <label>Gestante?</label>
+              <select name="gestante">
+                <option value="">Não informado</option>
+                <option>Sim</option>
+                <option>Não</option>
+                <option>Não sabe</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label>DUM</label>
+              <input name="dum" type="date" />
+            </div>
+
+            <div class="field third">
+              <label>IG</label>
+              <input name="ig" placeholder="Ex.: 32s4d" />
+            </div>
+
+            <div class="field third">
+              <label>DPP</label>
+              <input name="dpp" type="date" />
+            </div>
+
+            <div class="field third">
+              <label>Classificação de risco</label>
+              <select name="risco">
+                <option value="">Não informada</option>
+                <option>Emergência</option>
+                <option>Urgência</option>
+                <option>Pouco urgente</option>
+                <option>Não urgente</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label>Cartão pré-natal</label>
+              <select name="cartaoPrenatal">
+                <option value="">Não informado</option>
+                <option>Disponível</option>
+                <option>Indisponível</option>
+                <option>Não realiza pré-natal</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="hda">
+          <h2>2. HDA, sinais vitais e sinais de gravidade</h2>
+
+          <div class="card-body">
+            <div class="alert-box">
+              Sinais de alarme devem ser registrados explicitamente: sangramento intenso, perda de líquido, febre, dor abdominal importante, cefaleia persistente, escotomas, dor epigástrica/HCD, convulsão, dispneia, síncope, trauma e redução/ausência de movimentos fetais.
+            </div>
+
+            <div class="grid">
+              <div class="field third">
+                <label>PA</label>
+                <input name="pa" placeholder="Ex.: 120x80 mmHg" />
+              </div>
+
+              <div class="field third">
+                <label>FC</label>
+                <input name="fc" placeholder="bpm" />
+              </div>
+
+              <div class="field third">
+                <label>FR</label>
+                <input name="fr" placeholder="irpm" />
+              </div>
+
+              <div class="field third">
+                <label>Temperatura</label>
+                <input name="temp" placeholder="°C" />
+              </div>
+
+              <div class="field third">
+                <label>SatO₂</label>
+                <input name="sat" placeholder="%" />
+              </div>
+
+              <div class="field third">
+                <label>Dor</label>
+                <input name="dor" placeholder="0-10" />
+              </div>
+
+              <div class="field full">
+                <label>História da doença atual</label>
+                <textarea name="hda" placeholder="Início, evolução, características, fatores de melhora/piora, tratamentos prévios e resposta."></textarea>
+              </div>
+
+              <div class="field full">
+                <label>Sintomas associados</label>
+
+                <div class="checks" data-group="sintomas">
+                  <label class="check"><input type="checkbox" value="dor pélvica">Dor pélvica</label>
+                  <label class="check"><input type="checkbox" value="dor abdominal">Dor abdominal</label>
+                  <label class="check"><input type="checkbox" value="febre/calafrios">Febre/calafrios</label>
+                  <label class="check"><input type="checkbox" value="náuseas/vômitos">Náuseas/vômitos</label>
+                  <label class="check"><input type="checkbox" value="disúria/polaciúria">Disúria/polaciúria</label>
+                  <label class="check"><input type="checkbox" value="corrimento vaginal">Corrimento vaginal</label>
+                  <label class="check"><input type="checkbox" value="prurido vulvovaginal">Prurido vulvovaginal</label>
+                  <label class="check"><input type="checkbox" value="sangramento vaginal">Sangramento vaginal</label>
+                  <label class="check"><input type="checkbox" value="perda de líquido vaginal">Perda de líquido vaginal</label>
+                  <label class="check"><input type="checkbox" value="contrações uterinas">Contrações uterinas</label>
+                  <label class="check"><input type="checkbox" value="redução dos movimentos fetais">Redução dos movimentos fetais</label>
+                  <label class="check"><input type="checkbox" value="cefaleia/escotomas">Cefaleia/escotomas</label>
+                </div>
+              </div>
+
+              <div class="field full">
+                <label>Sinais de gravidade</label>
+
+                <div class="checks" data-group="gravidade">
+                  <label class="check"><input type="checkbox" value="instabilidade hemodinâmica">Instabilidade hemodinâmica</label>
+                  <label class="check"><input type="checkbox" value="sangramento vaginal intenso">Sangramento vaginal intenso</label>
+                  <label class="check"><input type="checkbox" value="dor abdominal intensa">Dor abdominal intensa</label>
+                  <label class="check"><input type="checkbox" value="febre">Febre</label>
+                  <label class="check"><input type="checkbox" value="síncope/lipotimia">Síncope/lipotimia</label>
+                  <label class="check"><input type="checkbox" value="dispneia">Dispneia</label>
+                  <label class="check"><input type="checkbox" value="convulsão">Convulsão</label>
+                  <label class="check"><input type="checkbox" value="alteração do nível de consciência">Alteração do nível de consciência</label>
+                  <label class="check"><input type="checkbox" value="cefaleia intensa/persistente">Cefaleia intensa/persistente</label>
+                  <label class="check"><input type="checkbox" value="escotomas/turvação visual">Escotomas/turvação visual</label>
+                  <label class="check"><input type="checkbox" value="dor epigástrica/HCD">Dor epigástrica/HCD</label>
+                  <label class="check"><input type="checkbox" value="trauma/violência">Trauma/violência</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="gineco">
+          <h2>3. Anamnese ginecológica</h2>
+
+          <div class="card-body grid">
+            <div class="field third">
+              <label>Menarca</label>
+              <input name="menarca" placeholder="anos" />
+            </div>
+
+            <div class="field third">
+              <label>Ciclo</label>
+              <select name="ciclo">
+                <option value="">Não informado</option>
+                <option>Regular</option>
+                <option>Irregular</option>
+                <option>Amenorreia</option>
+                <option>Menopausa</option>
+                <option>Sangramento pós-menopausa</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label>Fluxo</label>
+              <select name="fluxo">
+                <option value="">Não informado</option>
+                <option>Pequeno</option>
+                <option>Habitual</option>
+                <option>Aumentado</option>
+                <option>Intenso com coágulos</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label>Dismenorreia</label>
+              <select name="dismenorreia">
+                <option value="">Não informado</option>
+                <option>Nega</option>
+                <option>Leve</option>
+                <option>Moderada</option>
+                <option>Intensa</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label>Sexualmente ativa</label>
+              <select name="sexualmenteAtiva">
+                <option value="">Não informado</option>
+                <option>Sim</option>
+                <option>Não</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label>Preservativo</label>
+              <select name="preservativo">
+                <option value="">Não informado</option>
+                <option>Sempre</option>
+                <option>Às vezes</option>
+                <option>Nunca</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Método contraceptivo</label>
+              <input name="metodo" placeholder="Ex.: ACO, DIU cobre, injetável, nenhum..." />
+            </div>
+
+            <div class="field">
+              <label>Última relação / risco gestacional</label>
+              <input name="riscoGestacional" placeholder="Ex.: relação desprotegida há 3 dias" />
+            </div>
+
+            <div class="field full">
+              <label>Antecedentes ginecológicos relevantes</label>
+              <textarea class="small" name="anteGineco" placeholder="IST prévia, DIP, endometriose, miomas, cistos, cirurgias, preventivo, mamografia..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="obstetrica">
+          <h2>4. Anamnese obstétrica</h2>
+
+          <div class="card-body grid">
+            <div class="field quarter">
+              <label>Gesta</label>
+              <input name="gesta" />
+            </div>
+
+            <div class="field quarter">
+              <label>Para</label>
+              <input name="para" />
+            </div>
+
+            <div class="field quarter">
+              <label>Abortos</label>
+              <input name="abortos" />
+            </div>
+
+            <div class="field quarter">
+              <label>Cesáreas</label>
+              <input name="cesareas" />
+            </div>
+
+            <div class="field">
+              <label>Pré-natal</label>
+              <input name="prenatal" placeholder="nº consultas, local, intercorrências" />
+            </div>
+
+            <div class="field">
+              <label>Tipo sanguíneo/Rh</label>
+              <input name="rh" placeholder="Ex.: O+, A-, desconhecido" />
+            </div>
+
+            <div class="field full">
+              <label>Sorologias / exames do pré-natal</label>
+              <textarea class="small" name="sorologias" placeholder="HIV, VDRL, HBsAg, HCV, toxoplasmose, rubéola, GBS, EAS, urocultura..."></textarea>
+            </div>
+
+            <div class="field full">
+              <label>USG mais recente</label>
+              <textarea class="small" name="usg" placeholder="Data, IG, placenta, líquido, apresentação, peso fetal estimado, achados relevantes."></textarea>
+            </div>
+
+            <div class="field third">
+              <label>Movimentos fetais</label>
+              <select name="movFetais">
+                <option value="">Não informado</option>
+                <option>Presentes e habituais</option>
+                <option>Reduzidos</option>
+                <option>Ausentes</option>
+                <option>Ainda não percebe pela IG</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label>Contrações</label>
+              <input name="contracoes" placeholder="Ex.: 3/10 min" />
+            </div>
+
+            <div class="field third">
+              <label>Perda de líquido</label>
+              <input name="perdaLiquido" placeholder="horário/aspecto/odor" />
+            </div>
+
+            <div class="field third">
+              <label>Sangramento</label>
+              <input name="sangramento" placeholder="quantidade/cor/coágulos" />
+            </div>
+
+            <div class="field third">
+              <label>Sintomas hipertensivos</label>
+              <input name="sintHipertensivos" placeholder="cefaleia, escotomas, HCD..." />
+            </div>
+
+            <div class="field third">
+              <label>Intercorrências</label>
+              <input name="intercorrenciasGestacao" />
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="puerperio">
+          <h2>5. Puerpério, se aplicável</h2>
+
+          <div class="card-body grid">
+            <div class="field third">
+              <label>Data do parto</label>
+              <input name="dataParto" type="date" />
+            </div>
+
+            <div class="field third">
+              <label>Via de parto</label>
+              <select name="viaParto">
+                <option value="">Não informado</option>
+                <option>Vaginal</option>
+                <option>Cesárea</option>
+                <option>Fórcipe/vácuo</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label>Amamentação</label>
+              <select name="amamentacao">
+                <option value="">Não informado</option>
+                <option>Exclusiva</option>
+                <option>Mista</option>
+                <option>Não amamenta</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label>Queixas puerperais</label>
+              <textarea class="small" name="queixasPuerperio" placeholder="Febre, dor, lóquios, ferida operatória, mastalgia, cefaleia, PA elevada, sintomas emocionais..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="antecedentes">
+          <h2>6. Antecedentes pessoais, medicações e contexto</h2>
+
+          <div class="card-body grid">
+            <div class="field full">
+              <label>Comorbidades</label>
+
+              <div class="checks" data-group="comorbidades">
+                <label class="check"><input type="checkbox" value="hipertensão arterial">Hipertensão arterial</label>
+                <label class="check"><input type="checkbox" value="diabetes mellitus">Diabetes mellitus</label>
+                <label class="check"><input type="checkbox" value="cardiopatia">Cardiopatia</label>
+                <label class="check"><input type="checkbox" value="nefropatia">Nefropatia</label>
+                <label class="check"><input type="checkbox" value="trombofilia/TEV prévio">Trombofilia/TEV prévio</label>
+                <label class="check"><input type="checkbox" value="asma">Asma</label>
+                <label class="check"><input type="checkbox" value="epilepsia">Epilepsia</label>
+                <label class="check"><input type="checkbox" value="doença tireoidiana">Doença tireoidiana</label>
+                <label class="check"><input type="checkbox" value="doença autoimune">Doença autoimune</label>
+                <label class="check"><input type="checkbox" value="transtorno psiquiátrico">Transtorno psiquiátrico</label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Alergias</label>
+              <input name="alergias" placeholder="Nega ou especificar" />
+            </div>
+
+            <div class="field">
+              <label>Medicações em uso</label>
+              <input name="medicacoes" />
+            </div>
+
+            <div class="field full">
+              <label>Cirurgias/internações prévias</label>
+              <textarea class="small" name="cirurgias"></textarea>
+            </div>
+
+            <div class="field full">
+              <label>Hábitos e vulnerabilidade</label>
+              <textarea class="small" name="habitos" placeholder="Tabagismo, álcool, drogas, rede de apoio, violência doméstica/sexual, segurança em casa..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="exame">
+          <h2>7. Exame físico geral, obstétrico e ginecológico</h2>
+
+          <div class="card-body grid">
+            <div class="field full">
+              <label>Exame físico geral</label>
+              <textarea name="exameGeral" placeholder="EG, mucosas, hidratação, perfusão, edema, cardiovascular, respiratório, abdome..."></textarea>
+            </div>
+
+            <div class="field third">
+              <label>Altura uterina</label>
+              <input name="au" placeholder="cm" />
+            </div>
+
+            <div class="field third">
+              <label>BCF</label>
+              <input name="bcf" placeholder="bpm" />
+            </div>
+
+            <div class="field third">
+              <label>Dinâmica uterina</label>
+              <input name="du" placeholder="contrações/10 min" />
+            </div>
+
+            <div class="field full">
+              <label>Exame obstétrico</label>
+              <textarea class="small" name="exameObstetrico" placeholder="Situação, apresentação, dor à palpação uterina, tônus, CTG, etc."></textarea>
+            </div>
+
+            <div class="field full">
+              <label>Exame ginecológico / especular / toque</label>
+              <textarea name="exameGineco" placeholder="Vulva, especular, colo, corrimento, sangramento, toque vaginal, dilatação, apagamento, bolsa, De Lee, dor anexial, mobilização do colo..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" id="conduta">
+          <h2>8. Hipóteses, exames, conduta e desfecho</h2>
+
+          <div class="card-body grid">
+            <div class="field full">
+              <label>Hipóteses diagnósticas</label>
+              <textarea class="small" name="hipoteses" placeholder="1. ...&#10;2. ..."></textarea>
+            </div>
+
+            <div class="field full">
+              <label>Exames solicitados/avaliados</label>
+              <textarea class="small" name="exames" placeholder="Hemograma, beta-hCG, EAS, USG, CTG, proteinúria, função renal/hepática..."></textarea>
+            </div>
+
+            <div class="field full">
+              <label>Conduta</label>
+              <textarea name="conduta" placeholder="Medidas realizadas, medicações, hidratação, coleta de exames, avaliação sênior, internação, alta..."></textarea>
+            </div>
+
+            <div class="field full">
+              <label>Orientações e sinais de alarme</label>
+              <textarea class="small" name="orientacoes" placeholder="Retorno se sangramento, perda de líquido, febre, dor intensa, redução de movimentos fetais, cefaleia/escotomas/dor epigástrica..."></textarea>
+            </div>
+
+            <div class="field third">
+              <label>Desfecho</label>
+              <select name="desfecho">
+                <option value="">Não informado</option>
+                <option>Alta</option>
+                <option>Observação</option>
+                <option>Internação em enfermaria</option>
+                <option>Centro obstétrico</option>
+                <option>Centro cirúrgico</option>
+                <option>Transferência</option>
+                <option>UTI</option>
+                <option>Evasão</option>
+              </select>
+            </div>
+
+            <div class="field third">
+              <label>Médico</label>
+              <input name="medico" />
+            </div>
+
+            <div class="field third">
+              <label>CRM</label>
+              <input name="crm" />
+            </div>
+          </div>
+        </section>
+      </form>
+    </section>
+
+    <aside aria-label="Modelo gerado">
+      <div class="output-card">
+        <div class="output-header">
+          <strong>Modelo padronizado</strong>
+
+          <div class="output-actions">
+            <button type="button" id="btnGerar">Gerar</button>
+            <button type="button" class="secondary" id="btnCopiar">Copiar</button>
+            <button type="button" class="secondary" id="btnImprimir">Imprimir</button>
+          </div>
+        </div>
+
+        <textarea id="resultado" spellcheck="false" aria-label="Texto final gerado"></textarea>
+
+        <div class="status" id="status">
+          Preencha o formulário e clique em “Gerar”.
+        </div>
+      </div>
+
+      <p class="footer-note">
+        Sugestão: revise sempre o texto antes de colar no prontuário. Este modelo não substitui protocolo institucional nem julgamento clínico.
+      </p>
+    </aside>
+  </main>
+
+  <script>
+    const form = document.getElementById('goForm');
+    const resultado = document.getElementById('resultado');
+    const statusEl = document.getElementById('status');
+
+    function val(name) {
+      const el = form.elements[name];
+      if (!el) return '';
+      return String(el.value || '').trim();
+    }
+
+    function fmtDate(v) {
+      if (!v) return '';
+      const [y, m, d] = v.split('-');
+      if (!y || !m || !d) return v;
+      return `${d}/${m}/${y}`;
+    }
+
+    function selected(groupName) {
+      return Array.from(
+        document.querySelectorAll(`[data-group="${groupName}"] input:checked`)
+      ).map(i => i.value);
+    }
+
+    function line(label, value) {
+      const v = String(value || '').trim();
+      return v ? `${label}: ${v}` : '';
+    }
+
+    function listOrNone(arr) {
+      return arr.length ? arr.join('; ') : 'não registrados';
+    }
+
+    function block(title, lines) {
+      const clean = lines.filter(Boolean);
+      if (!clean.length) return '';
+      return `\n${title}\n${'-'.repeat(title.length)}\n${clean.join('\n')}\n`;
+    }
+
+    function gerarModelo() {
+      const nome = val('nome') || 'Paciente não identificada';
+      const idade = val('idade') ? `${val('idade')} anos` : 'idade não informada';
+      const dataHora = [fmtDate(val('data')), val('hora')].filter(Boolean).join(' às ');
+
+      const gpa = [
+        val('gesta') ? `G${val('gesta')}` : '',
+        val('para') ? `P${val('para')}` : '',
+        val('abortos') ? `A${val('abortos')}` : '',
+        val('cesareas') ? `C${val('cesareas')}` : ''
+      ].filter(Boolean).join(' ');
+
+      const vitais = [
+        line('PA', val('pa')),
+        line('FC', val('fc')),
+        line('FR', val('fr')),
+        line('Temperatura', val('temp')),
+        line('SatO₂', val('sat')),
+        line('Dor', val('dor'))
+      ].filter(Boolean).join('; ');
+
+      const texto = [
+        'ANAMNESE — PLANTÃO DE GINECOLOGIA E OBSTETRÍCIA',
+        dataHora ? `Data/hora: ${dataHora}` : '',
+        '',
+        `Identificação: ${nome}, ${idade}.`,
+        line('Prontuário', val('prontuario')),
+        line('Procedência', val('procedencia')),
+        line('Acompanhante', val('acompanhante')),
+        line('Classificação de risco', val('risco')),
+        line('Queixa principal', val('qp')),
+
+        block('GESTAÇÃO / DADOS OBSTÉTRICOS INICIAIS', [
+          line('Gestante', val('gestante')),
+          line('DUM', fmtDate(val('dum'))),
+          line('IG', val('ig')),
+          line('DPP', fmtDate(val('dpp'))),
+          line('Cartão pré-natal', val('cartaoPrenatal')),
+          gpa ? `Antecedentes obstétricos: ${gpa}.` : '',
+          line('Pré-natal', val('prenatal')),
+          line('Tipo sanguíneo/Rh', val('rh')),
+          line('Sorologias/exames do pré-natal', val('sorologias')),
+          line('USG mais recente', val('usg'))
+        ]),
+
+        block('HISTÓRIA DA DOENÇA ATUAL', [
+          val('hda'),
+          `Sintomas associados: ${listOrNone(selected('sintomas'))}.`,
+          `Sinais de gravidade: ${listOrNone(selected('gravidade'))}.`
+        ]),
+
+        block('SINAIS VITAIS', [
+          vitais || 'Não registrados.'
+        ]),
+
+        block('ANAMNESE GINECOLÓGICA', [
+          line('Menarca', val('menarca')),
+          line('Ciclo menstrual', val('ciclo')),
+          line('Fluxo', val('fluxo')),
+          line('Dismenorreia', val('dismenorreia')),
+          line('Sexualmente ativa', val('sexualmenteAtiva')),
+          line('Uso de preservativo', val('preservativo')),
+          line('Método contraceptivo', val('metodo')),
+          line('Última relação/risco gestacional', val('riscoGestacional')),
+          line('Antecedentes ginecológicos', val('anteGineco'))
+        ]),
+
+        block('GESTAÇÃO ATUAL / QUEIXAS OBSTÉTRICAS', [
+          line('Movimentos fetais', val('movFetais')),
+          line('Contrações', val('contracoes')),
+          line('Perda de líquido', val('perdaLiquido')),
+          line('Sangramento vaginal', val('sangramento')),
+          line('Sintomas hipertensivos', val('sintHipertensivos')),
+          line('Intercorrências na gestação', val('intercorrenciasGestacao'))
+        ]),
+
+        block('PUERPÉRIO', [
+          line('Data do parto', fmtDate(val('dataParto'))),
+          line('Via de parto', val('viaParto')),
+          line('Amamentação', val('amamentacao')),
+          line('Queixas puerperais', val('queixasPuerperio'))
+        ]),
+
+        block('ANTECEDENTES PESSOAIS E CONTEXTO', [
+          `Comorbidades: ${listOrNone(selected('comorbidades'))}.`,
+          line('Alergias', val('alergias')),
+          line('Medicações em uso', val('medicacoes')),
+          line('Cirurgias/internações prévias', val('cirurgias')),
+          line('Hábitos/vulnerabilidade', val('habitos'))
+        ]),
+
+        block('EXAME FÍSICO', [
+          line('Exame geral', val('exameGeral')),
+          line('Altura uterina', val('au')),
+          line('BCF', val('bcf')),
+          line('Dinâmica uterina', val('du')),
+          line('Exame obstétrico', val('exameObstetrico')),
+          line('Exame ginecológico/especular/toque', val('exameGineco'))
+        ]),
+
+        block('HIPÓTESES DIAGNÓSTICAS', [
+          val('hipoteses') || 'Não registradas.'
+        ]),
+
+        block('EXAMES / CONDUTA / DESFECHO', [
+          line('Exames solicitados/avaliados', val('exames')),
+          line('Conduta', val('conduta')),
+          line('Orientações e sinais de alarme', val('orientacoes')),
+          line('Desfecho', val('desfecho'))
+        ]),
+
+        block('RESPONSÁVEL', [
+          line('Médico', val('medico')),
+          line('CRM', val('crm'))
+        ])
+      ].filter(Boolean).join('\n');
+
+      resultado.value = texto.replace(/\n{3,}/g, '\n\n').trim() + '\n';
+      statusEl.textContent = 'Modelo gerado. Revise antes de copiar para o prontuário.';
+
+      return resultado.value;
+    }
+
+    async function copiarModelo() {
+      const texto = resultado.value.trim() ? resultado.value : gerarModelo();
+
+      try {
+        await navigator.clipboard.writeText(texto);
+        statusEl.textContent = 'Texto copiado para a área de transferência.';
+      } catch (err) {
+        resultado.focus();
+        resultado.select();
+        document.execCommand('copy');
+        statusEl.textContent = 'Texto selecionado. Se necessário, use Ctrl+C.';
+      }
+    }
+
+    function limpar() {
+      if (!confirm('Limpar todos os campos preenchidos?')) return;
+
+      form.reset();
+      resultado.value = '';
+      statusEl.textContent = 'Campos limpos.';
+      localStorage.removeItem('anamneseGOForm');
+    }
+
+    function salvarLocal() {
+      const data = {};
+
+      Array.from(form.elements).forEach(el => {
+        if (!el.name) return;
+        if (el.type === 'checkbox') return;
+        data[el.name] = el.value;
+      });
+
+      data._checks = {};
+
+      document.querySelectorAll('[data-group]').forEach(group => {
+        const key = group.dataset.group;
+        data._checks[key] = Array.from(
+          group.querySelectorAll('input:checked')
+        ).map(i => i.value);
+      });
+
+      localStorage.setItem('anamneseGOForm', JSON.stringify(data));
+    }
+
+    function carregarLocal() {
+      try {
+        const raw = localStorage.getItem('anamneseGOForm');
+        if (!raw) return;
+
+        const data = JSON.parse(raw);
+
+        Object.entries(data).forEach(([key, value]) => {
+          if (key === '_checks') return;
+          if (form.elements[key]) form.elements[key].value = value;
+        });
+
+        if (data._checks) {
+          Object.entries(data._checks).forEach(([group, values]) => {
+            document.querySelectorAll(`[data-group="${group}"] input`).forEach(input => {
+              input.checked = values.includes(input.value);
+            });
+          });
+        }
+      } catch (e) {
+        console.warn('Não foi possível carregar dados locais.', e);
+      }
+    }
+
+    document.getElementById('btnGerar').addEventListener('click', gerarModelo);
+    document.getElementById('btnGerarTopo').addEventListener('click', gerarModelo);
+
+    document.getElementById('btnCopiar').addEventListener('click', copiarModelo);
+    document.getElementById('btnCopiarTopo').addEventListener('click', copiarModelo);
+
+    document.getElementById('btnLimparTopo').addEventListener('click', limpar);
+
+    document.getElementById('btnImprimir').addEventListener('click', () => {
+      gerarModelo();
+      window.print();
+    });
+
+    form.addEventListener('input', salvarLocal);
+    form.addEventListener('change', salvarLocal);
+
+    carregarLocal();
+
+    const now = new Date();
+
+    if (!val('data')) {
+      document.querySelector('[name="data"]').value = now.toISOString().slice(0, 10);
+    }
+
+    if (!val('hora')) {
+      document.querySelector('[name="hora"]').value = now.toTimeString().slice(0, 5);
+    }
+
+    gerarModelo();
+  </script>
+</body>
+</html>
